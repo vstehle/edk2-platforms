@@ -66,6 +66,14 @@ ReadWriteRpmb (
   ARM_SVC_ARGS  SvcArgs;
   EFI_STATUS    Status;
 
+  // Stub the RPMB accesses:
+  // - All reads return ~0 to simulate an uninitialized flash.
+  // - All writes do nothing and pretend to succeed.
+  if (SvcAct == SP_SVC_RPMB_READ)
+    SetMem64 ((VOID *)Addr, NumBytes, ~0UL);
+
+  return EFI_SUCCESS;
+
   ZeroMem (&SvcArgs, sizeof (SvcArgs));
 
   SvcArgs.Arg0 = ARM_SVC_ID_FFA_MSG_SEND_DIRECT_REQ;
